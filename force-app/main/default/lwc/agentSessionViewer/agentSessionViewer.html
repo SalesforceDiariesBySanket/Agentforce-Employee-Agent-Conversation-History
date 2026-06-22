@@ -1,0 +1,137 @@
+<template>
+    <lightning-card title="Agentforce Conversations" icon-name="standard:bot">
+        <div class="viewer">
+            <!-- LEFT: filters + session list -->
+            <div class="pane pane_list">
+                <div class="toolbar">
+                    <template if:true={showAgentDropdown}>
+                        <lightning-combobox
+                            label="Agent"
+                            value={selectedAgent}
+                            options={agentOptions}
+                            onchange={handleAgentChange}
+                            class="toolbar__field"
+                        ></lightning-combobox>
+                    </template>
+                </div>
+
+                <div class="list-header">
+                    <template if:true={sessionCountLabel}>
+                        <span class="count">{sessionCountLabel}</span>
+                    </template>
+                </div>
+
+                <ul class="session-list">
+                    <template for:each={sessions} for:item="s">
+                        <li
+                            key={s.sessionId}
+                            class={s.cssClass}
+                            data-id={s.sessionId}
+                            onclick={handleSelectSession}
+                        >
+                            <div class="avatar">{s.initial}</div>
+                            <div class="session-row__body">
+                                <div class="session-row__top">
+                                    <span class="session-row__agent">{s.label}</span>
+                                    <span class="badge">{s.countLabel}</span>
+                                </div>
+                                <div class="session-row__user">{s.sub}</div>
+                                <div class="session-row__meta">
+                                    <span class="session-row__time">{s.relativeTime}</span>
+                                    <span class="session-row__channel">{s.channelType}</span>
+                                </div>
+                            </div>
+                        </li>
+                    </template>
+                </ul>
+
+                <!-- Loading skeletons (first load) -->
+                <template if:true={listLoading}>
+                    <div class="skeletons">
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
+                    </div>
+                </template>
+
+                <template if:true={noSessions}>
+                    <div class="empty">
+                        <lightning-icon icon-name="utility:search" size="small"></lightning-icon>
+                        <p>No sessions match these filters.</p>
+                    </div>
+                </template>
+
+                <template if:true={hasMore}>
+                    <div class="load-more">
+                        <lightning-button
+                            label="Load more"
+                            onclick={handleLoadMore}
+                            disabled={listLoading}
+                        ></lightning-button>
+                    </div>
+                </template>
+            </div>
+
+            <!-- RIGHT: conversation detail -->
+            <div class="pane pane_detail">
+                <template if:false={hasSelection}>
+                    <div class="placeholder">
+                        <lightning-icon icon-name="utility:chat" size="large"></lightning-icon>
+                        <p>Select a session to view its conversation.</p>
+                    </div>
+                </template>
+
+                <template if:true={hasSelection}>
+                    <div class="detail-header">
+                        <div class="detail-header__info">
+                            <h2>{selectedAgentApiName}</h2>
+                            <p class="detail-header__user">User: {selectedUserName}</p>
+                        </div>
+                        <lightning-button
+                            label="Continue in Agentforce"
+                            icon-name="utility:reply"
+                            variant="brand"
+                            onclick={handleContinue}
+                            disabled={continueDisabled}
+                        ></lightning-button>
+                    </div>
+
+                    <template if:true={detailLoading}>
+                        <lightning-spinner alternative-text="Loading conversation"></lightning-spinner>
+                    </template>
+
+                    <div class="transcript">
+                        <template if:true={showLoadEarlier}>
+                            <div class="load-earlier">
+                                <lightning-button
+                                    label={earlierLabel}
+                                    variant="neutral"
+                                    onclick={handleLoadEarlier}
+                                    disabled={loadingEarlier}
+                                ></lightning-button>
+                            </div>
+                        </template>
+                        <template for:each={messages} for:item="m">
+                            <div key={m.key} class={m.bubbleClass}>
+                                <div class="msg__who">{m.who}</div>
+                                <div class="msg__text">{m.text}</div>
+                                <div class="msg__time">
+                                    <lightning-formatted-date-time
+                                        value={m.sentTime}
+                                        hour="2-digit"
+                                        minute="2-digit"
+                                        second="2-digit"
+                                    ></lightning-formatted-date-time>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <template if:true={noMessages}>
+                        <p class="empty">No messages in this session.</p>
+                    </template>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>
