@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Agentforce Conversation Viewer</masterLabel>
+    <description>Browse Agentforce conversation sessions from Data Cloud, view transcripts, and continue with the same agent.</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage">
+            <property
+                name="targetUserId"
+                type="String"
+                label="Target User Id"
+                description="Reserved. Currently unused."
+            />
+        </targetConfig>
+        <targetConfig targets="lightning__RecordPage">
+            <property
+                name="targetUserId"
+                type="String"
+                label="Target User Id (override)"
+                description="Reserved. Currently unused."
+            />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
